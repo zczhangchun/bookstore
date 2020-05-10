@@ -1,0 +1,41 @@
+spring:
+  mvc:
+    static-path-pattern: /static/**
+  thymeleaf:
+    cache: false
+  datasource:
+    url: jdbc:mysql://172.16.38.132:3306/bookstore?serverTimezone=Asia/Shanghai
+    username: root
+    password: zc123123
+  redis:
+    host: 172.16.38.128
+mybatis:
+  type-aliases-package: com.bookstore.pojo
+  configuration:
+    map-underscore-to-camel-case: true
+sms:
+  accessKeyId: "LTAIIeie6liJo6BB"
+  accessKeySecret: "XWaf4D7ewTeIwGrPpr4qKQeQHatHHr"
+  SignName: "网上书城"
+  TemplateCode: "SMS_172224658"
+img:
+  path: "/Users/zhangchun/IdeaProjects/bookstore/src/main/resources/static/img/bookImg"
+prefix:
+  bookPrefix: "book:"
+  cartPrefix: "cart:userId:"
+  captchaPrefix: "captcha:userId:"
+  PVTotal: "PVTotal"
+  PVDaily: "PVDaily:"
+  turnoverTotal: "TurnoverTotal"
+  turnoverDaily: "TurnoverDaily:"
+  orderQuantityTotal: "OrderQuantityTotal"
+  OrderQuantityDaily: "OrderQuantityDaily:"
+pay:
+  appID: wx426b3015555a46be
+  mchID: 1900009851
+  key: 8934e7d15453e97507ef794cf7b0519d
+  httpConnectTimeoutMs: 1000
+  httpReadTimeoutMs: 8000
+  notifyUrl: http://rwvhik.natappfree.cc/notify/pay
+server:
+  port: 10010

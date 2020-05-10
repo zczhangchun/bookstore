@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>商品详情</title>
+    <link rel="stylesheet" href="../static/bootstrap-3.3.4/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../static/Flat-UI-master/dist/css/flat-ui.min.css">
+    <link rel="stylesheet" href="../static/css/index.css">
+    <script src="../static/bootstrap-3.3.4/dist/js/jquery-1.11.3.min.js"></script>
+</head>
+<body>
+<div id="head" th:replace="head :: head"></div>
+<div class="container">
+    <div class="row thumbnail">
+        <div class="col-sm-6">
+
+
+            <!-- Wrapper for slides -->
+
+            <div class="item active">
+                <img th:src="@{'../static/img/bookImg/' +${book.img} }" alt="" style="height: 550px;width: 100%;">
+                <div class="carousel-caption">
+                </div>
+            </div>
+
+
+        </div>
+        <div class="col-sm-6">
+            <div th:text="${book.name}" style="font-size: 30px">
+
+            </div>
+            <p>售价：<span class="text-danger" th:text="'￥' + ${#numbers.formatDecimal((book.price)/100.00,2,2)}"></span></p>
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    基本信息
+                </div>
+                <div class="panel-body">
+                    <div th:text="'作者：' + ${book.author}"></div>
+                    <div th:text="'出版社：' + ${book.publisher}"></div>
+                    <div th:text="'ISBN：' + ${book.isbn} "></div>
+                    <div th:if="${book.publishTime}"
+                         th:text="'出版日期：' + ${#dates.format(book.publishTime,'yyyy 年MM月')} "></div>
+                    <div th:if="${book.format}" th:text="'开本：' + ${book.format} "></div>
+                    <div th:if="${book.pagesize}" th:text="'页码：' + ${book.pagesize} "></div>
+                    <div th:if="${book.categoryName}" th:text="'所属分类：' + ${book.categoryName} "></div>
+                </div>
+            </div>
+
+            <div style=" font-size: 35px;line-height: 40px;height: 80px">数量：
+                <button id="reduce" type="button" class="btn btn-default">-</button>
+                <input id="number" type="text" style="text-align: center;height : 40px;width: 50px;font-size: 20px"
+                       value="1"></input>
+                <button id="add" type="button" class="btn btn-default">+</button>
+                <label style="color: red" id="numberError"></label>
+            </div>
+            <div class="caption center">
+                <div class="col-sm-6">
+                    <button th:if="${book.status}" id="addCart" class="btn btn-warning btn-block" role="button">加入购物车</button>
+                    <button th:if="${!book.status}" disabled  class="btn btn-warning btn-block" role="button">此书已下架</button>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+<div class="navbar navbar-default footer">
+</div>
+<script th:inline="javascript">
+
+    $(function () {
+        //================下拉菜单的js===============
+        var bool = true;
+        $("#open").click(function () {
+
+            if (bool){
+                console.log(123);
+                $(this).removeClass("dropdown");
+                $(this).addClass("dropdown open");
+                bool = !bool;
+            }else {
+                console.log(321);
+                $(this).removeClass("dropdown open");
+                $(this).addClass("dropdown");
+                bool = !bool;
+            }
+
+        });
+        //================下拉菜单的js===============
+
+        var book = /*[[${book}]]*/0;
+
+        //给number输入框绑定事件
+        $("#number").blur(function () {
+
+            var number = parseInt($("#number").val());
+
+            //如果大于了100，置成100
+            if (number > 100) {
+                $("#number").val(100);
+            }
+
+            if (number < 1){
+                $("#number").val(1);
+            }
+
+        })
+
+        $("#addCart").click(function () {
+
+
+            $.ajax({
+                url: "/cart/addCart",
+                type: "POST",
+                data: {
+                    "bookId": book.id,
+                    "bookName": book.name,
+                    "number": $("#number").val(),
+                    "img": book.img,
+                    "price": book.price,
+                },
+                success: function () {
+                    window.location.href = "/cart/skipCart";
+                }
+            })
+
+        })
+
+
+        $("#add").click(function () {
+            if (parseInt($("#number").val()) < 100) {
+                $("#number").val(parseInt($("#number").val()) + 1);
+            }
+        })
+        $("#reduce").click(function () {
+            if (parseInt($("#number").val()) > 1) {
+                $("#number").val(parseInt($("#number").val()) - 1);
+            }
+        })
+    })
+</script>
+<script src="../static/bootstrap-3.3.4/dist/js/bootstrap.min.js"></script>
+<script src="../static/Flat-UI-master/dist/js/flat-ui.min.js"></script>
+<script src="../static/bootstrap-3.3.4/js/carousel.js"></script>
+</body>
+</html>

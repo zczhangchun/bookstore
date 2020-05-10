@@ -1,0 +1,250 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>退款信息</title>
+    <link rel="stylesheet" href="../static/bootstrap-3.3.4/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../static/Flat-UI-master/dist/css/flat-ui.min.css">
+    <link rel="stylesheet" href="../static/css/index.css">
+    <script src="../static/bootstrap-3.3.4/dist/js/jquery-1.11.3.min.js"></script>
+    <style>
+        .pagination {
+            background: #16a085;
+        }
+    </style>
+    <script>
+        $(function () {
+            $('#myTabs a').click(function () {
+                if ($(this)[0].hash == "#orderManager" && $("#footer").hasClass("navbar-fixed-bottom")) {
+                    $("#footer").removeClass("navbar-fixed-bottom");
+                } else {
+                    if (!$("#footer").hasClass("navbar-fixed-bottom")) {
+                        $("#footer").addClass("navbar-fixed-bottom");
+                    }
+                }
+                $(this).tab('show')
+            });
+
+
+        })
+
+    </script>
+</head>
+<body>
+<div id="head" th:replace="head :: head"></div>
+<div class="container">
+    <div class="row thumbnail center col-sm-12">
+        <div class="col-sm-12">
+            <h3 class="text-center" style="margin-bottom: 20px">退款信息</h3>
+        </div>
+
+        <ul class="nav nav-tabs nav-justified" id="myTabs">
+            <li class="active"><a href="#">退款信息</a></li>
+        </ul>
+
+        <!-- Tab panes -->
+        <div class="tab-content">
+            <div role="tabpanel" class="tab-pane active" id="editPassword">
+                <div class="container" style="margin-top: 20px;">
+
+
+                    <div class="col-sm-12">
+                        <form method="post" id="form" class="form-horizontal caption" action="/order/refund">
+                            <input hidden name="orderId" th:value="${orderId}">
+                            <input hidden name="type" th:value="${type}">
+                            <div class="form-group">
+
+
+                                <label class="col-sm-4 control-label">退款类型</label>
+                                <div class="col-sm-5">
+                                    <input th:if="${type} == 0" disabled style="width: 430px" value="未发货退款">
+                                    <input th:if="${type} == 1" disabled style="width: 430px" value="已发货退款">
+                                </div>
+                            </div>
+
+                            <th:block th:if="${type} == 1">
+                            <div class="form-group">
+                                <label  class="col-sm-4 control-label">物流公司<a style="color: red">*</a></label>
+                                <div class="col-sm-5">
+                                    <input type="text" name="shippingName" class="inputClass form-control" id="shippingName" placeholder="请输入物流公司">
+                                </div>
+                                <label class="errorClass" style="font-size: 5px; color: red" id="shippingNameError" ></label>
+                            </div>
+
+                            <div class="form-group">
+                                <label  class="col-sm-4 control-label">物流单号<a style="color: red">*</a></label>
+                                <div class="col-sm-5">
+                                    <input type="text" name="shippingCode" class="inputClass form-control" id="shippingCode" placeholder="请输入物流单号">
+                                </div>
+                                <label class="errorClass" style="font-size: 5px; color: red" id="shippingCodeError" ></label>
+                            </div>
+                            </th:block>
+
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label">退货原因<a style="color: red">*</a></label>
+                                <div class="col-sm-5 data rowHeight2x">
+                                    <textarea name="reason" id="reason" class="inputClass form-control" rows="3"
+                                              placeholder="退货原因"></textarea>
+                                </div>
+                                <label style="font-size: 5px; color: red" id="reasonError"
+                                       class="errorClass"></label>
+                            </div>
+
+
+                            <div class="form-group">
+                                <div class="col-sm-offset-4 col-sm-5">
+                                    <button th:if="${type} == 0" id="btn1" type="submit" class="btn btn-info btn-block">立即退款</button>
+                                    <button th:if="${type} == 1" id="btn2" type="submit" class="btn btn-info btn-block">申请退款</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script src="../static/bootstrap-3.3.4/dist/js/bootstrap.min.js"></script>
+<script src="../static/Flat-UI-master/dist/js/flat-ui.min.js"></script>
+<script src="../static/bootstrap-3.3.4/js/carousel.js"></script>
+<script th:inline="javascript">
+
+    $(function () {
+
+        //================ 数据验证 =================
+        //得到焦点事件
+        $(".inputClass").focus(function () {
+
+            var id = $(this).prop("id");
+
+            $("#" + id + "Error").text("");
+
+        })
+
+        //失去焦点事件
+        $(".inputClass").blur(function () {
+
+            var lableId = $(this).prop("id");
+
+            var funName = "verify" + lableId.substring(0, 1).toUpperCase() + lableId.substring(1) + "()";
+            eval(funName);
+        })
+
+        //表单提交事件
+        $("#form").submit(function () {
+
+            var bool = true;
+            var type = /*[[${type}]]*/0;
+
+            if (!verifyReason()) {
+                bool = false;
+            }
+            if (type == 1){
+
+                if (!verifyShippingCode()) {
+                    bool = false;
+                }
+
+                if (!verifyShippingName()) {
+                    bool = false;
+                }
+
+            }
+
+            return bool;
+
+        })
+
+
+
+    })
+
+    function verifyReason() {
+        var id = "reason";
+        var value = $("#" + id).val();
+
+        //非空校验
+        if (!value) {
+            $("#" + id + "Error").text("退款原因不能为空");
+            showError($("#" + id + "Error"));
+            return false;
+        }
+
+        return true;
+
+    }
+
+    //显示错误
+    function showError(element) {
+        var text = element.text();
+        if (!text) {
+            //如果为空，隐藏元素
+            element.css("display", "none");
+        } else {
+            //有内容，显示该元素
+            element.css("display", "");
+        }
+
+    }
+
+    function verifyShippingName() {
+        var id = "shippingName";
+        var value = $("#" + id).val();
+
+        //非空校验
+        if (!value) {
+            $("#" + id + "Error").text("物流公司不能为空");
+            showError($("#" + id + "Error"));
+            return false;
+        }
+
+        return true;
+
+    }
+
+    function verifyShippingCode() {
+        var id = "shippingCode";
+        var value = $("#" + id).val();
+
+        //非空校验
+        if (!value) {
+            $("#" + id + "Error").text("物流单号不能为空");
+            showError($("#" + id + "Error"));
+            return false;
+        }
+
+        return true;
+
+    }
+
+
+    $(function () {
+
+        //================下拉菜单的js===============
+        var bool = true;
+        $("#open").click(function () {
+
+            if (bool) {
+                console.log(123);
+                $(this).removeClass("dropdown");
+                $(this).addClass("dropdown open");
+                bool = !bool;
+            } else {
+                console.log(321);
+                $(this).removeClass("dropdown open");
+                $(this).addClass("dropdown");
+                bool = !bool;
+            }
+
+        });
+        //================下拉菜单的js===============
+    })
+
+</script>
+</body>
+</html>

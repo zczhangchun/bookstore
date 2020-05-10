@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>退款信息</title>
+    <link rel="stylesheet" href="../static/bootstrap-3.3.4/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../static/Flat-UI-master/dist/css/flat-ui.min.css">
+    <link rel="stylesheet" href="../static/css/index.css">
+    <script src="../static/bootstrap-3.3.4/dist/js/jquery-1.11.3.min.js"></script>
+    <style>
+        .pagination {
+            background: #16a085;
+        }
+    </style>
+    <script>
+        $(function () {
+            $('#myTabs a').click(function () {
+                if ($(this)[0].hash == "#orderManager" && $("#footer").hasClass("navbar-fixed-bottom")) {
+                    $("#footer").removeClass("navbar-fixed-bottom");
+                } else {
+                    if (!$("#footer").hasClass("navbar-fixed-bottom")) {
+                        $("#footer").addClass("navbar-fixed-bottom");
+                    }
+                }
+                $(this).tab('show')
+            });
+
+
+        })
+
+    </script>
+</head>
+<body>
+<div id="head" th:replace="head :: head"></div>
+<div class="container">
+    <div class="row thumbnail center col-sm-12">
+        <div class="col-sm-12">
+            <h3 class="text-center" style="margin-bottom: 20px">退款信息</h3>
+        </div>
+
+        <ul class="nav nav-tabs nav-justified" id="myTabs">
+            <li class="active"><a href="#">退款信息</a></li>
+        </ul>
+
+        <!-- Tab panes -->
+        <div class="tab-content">
+            <div role="tabpanel" class="tab-pane active" id="editPassword">
+                <div class="container" style="margin-top: 20px;">
+                    <div class="col-sm-12">
+                        <form id="form" class="form-horizontal caption" method="post" action="/user/login">
+
+
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label">订单号</label>
+                                <div class="col-sm-5">
+                                    <input th:value="${orderReturn.orderId}" type="text" class="form-control">
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label">退款类型</label>
+                                <div class="col-sm-5">
+                                    <input th:if="${orderReturn.type} == 0" type="text" class="form-control"
+                                           value="未发货退款">
+                                    <input th:if="${orderReturn.type} == 1" type="text" class="form-control"
+                                           value="已发货退款">
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label">退款状态</label>
+                                <div class="col-sm-5">
+                                    <input th:if="${orderReturn.type} == 0" type="text" class="form-control"
+                                           value="待处理">
+                                    <input th:if="${orderReturn.type} == 1" type="text" class="form-control"
+                                           value="已受理">
+                                    <input th:if="${orderReturn.type} == 2" type="text" class="form-control"
+                                           value="已完成">
+                                    <input th:if="${orderReturn.type} == 3" type="text" class="form-control"
+                                           value="已拒绝">
+                                </div>
+                            </div>
+
+                            <th:block th:if="${orderReturn.type} == 1">
+                                <div class="form-group">
+                                    <label class="col-sm-4 control-label">物流公司</label>
+                                    <div class="col-sm-5">
+                                        <input th:value="${orderReturn.shippingName}" type="text" class="form-control" placeholder="物流公司">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-sm-4 control-label">物流单号</label>
+                                    <div class="col-sm-5">
+                                        <input th:value="${orderReturn.shippingCode}" type="text" class="form-control" placeholder="物流单号">
+                                    </div>
+                                </div>
+                            </th:block>
+
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label">退货原因<a style="color: red">*</a></label>
+                                <div class="col-sm-5 data rowHeight2x">
+                                    <textarea th:text="${orderReturn.reason}" class="inputClass form-control" rows="3"
+                                              placeholder="退货原因"></textarea>
+                                </div>
+                                <label style="font-size: 5px; color: red" id="reasonError"
+                                       class="errorClass"></label>
+                            </div>
+
+                            <div class="form-group">
+                                <div class="col-sm-offset-4 col-sm-5">
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script src="../static/bootstrap-3.3.4/dist/js/bootstrap.min.js"></script>
+<script src="../static/Flat-UI-master/dist/js/flat-ui.min.js"></script>
+<script src="../static/bootstrap-3.3.4/js/carousel.js"></script>
+<script>
+
+
+    $(function () {
+
+        //================下拉菜单的js===============
+        var bool = true;
+        $("#open").click(function () {
+
+            if (bool) {
+                console.log(123);
+                $(this).removeClass("dropdown");
+                $(this).addClass("dropdown open");
+                bool = !bool;
+            } else {
+                console.log(321);
+                $(this).removeClass("dropdown open");
+                $(this).addClass("dropdown");
+                bool = !bool;
+            }
+
+        });
+        //================下拉菜单的js===============
+    })
+
+</script>
+</body>
+</html>

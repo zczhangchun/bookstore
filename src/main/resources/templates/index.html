@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>图书商城</title>
+    <link rel="stylesheet" href="../static/bootstrap-3.3.4/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../static/Flat-UI-master/dist/css/flat-ui.min.css">
+    <link rel="stylesheet" href="../static/css/index.css">
+    <script src="../static/bootstrap-3.3.4/dist/js/jquery-1.11.3.min.js"></script>
+    <style>
+        .row {
+            margin-top: 20px;;
+        }
+
+        .center {
+            text-align: center;
+        }
+
+        .card {
+            margin-top: 10px;
+        }
+
+        #dropdown-menu li {
+            padding-bottom: 10px;
+            line-height: 30px;
+        }
+    </style>
+    <script>
+        $(function () {
+            $('#myTabs li').click(function (e) {
+                $(this).tab('show')
+            });
+        })
+    </script>
+</head>
+<body>
+<div id="head" th:replace="head :: head"></div>
+<div class="container">
+    <!-- 轮播图开始 -->
+    <div id="carousel-example-generic" class="carousel slide" data-ride="carousel">
+        <ol class="carousel-indicators">
+            <li data-target="#carousel-example-generic" data-slide-to="0" class="active"></li>
+            <li data-target="#carousel-example-generic" data-slide-to="1"></li>
+            <li data-target="#carousel-example-generic" data-slide-to="2"></li>
+            <li data-target="#carousel-example-generic" data-slide-to="3"></li>
+            <li data-target="#carousel-example-generic" data-slide-to="4"></li>
+        </ol>
+        <div class="carousel-inner" role="listbox">
+            <div class="item active">
+                <a href="/book/skipDetail?id=631f6236a6014510a5c02db596cb3cfd">
+                <img src="../static/img/carousel/1.jpg" alt="" style="height: 500px;width: 100%;">
+                </a>
+            </div>
+            <div class="item">
+                <a href="/book/skipDetail?id=c7195d4591e3499e896b6ff167115d93">
+                <img src="../static/img/carousel/2.jpg" alt="" style="height: 500px;width: 100%;">
+                </a>
+            </div>
+            <div class="item">
+                <a href="/book/skipDetail?id=f62bdb7b7d7f4c31b484b9039d5296fe">
+                <img src="../static/img/carousel/3.jpg" alt="" style="height: 500px;width: 100%;">
+                </a>
+            </div>
+            <div class="item">
+                <a href="/book/skipDetail?id=7e235fb99f094053ad1e060edc3e2c63">
+                <img src="../static/img/carousel/4.jpg" alt="" style="height: 500px;width: 100%;">
+                </a>
+            </div>
+            <div class="item">
+                <a href="/book/skipDetail?id=f05a2cb4740e4b2f93d9c67992b6db16">
+                <img src="../static/img/carousel/5.jpg" alt="" style="height: 500px;width: 100%;">
+                </a>
+            </div>
+        </div>
+
+        <!-- Controls -->
+        <a class="left carousel-control" href="#carousel-example-generic" role="button" data-slide="prev">
+            <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
+            <span class="sr-only">Previous</span>
+        </a>
+        <a class="right carousel-control" href="#carousel-example-generic" role="button" data-slide="next">
+            <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
+            <span class="sr-only">Next</span>
+        </a>
+    </div>
+    <!-- 轮播结束-->
+
+
+    <div class="card" id="category" th:fragment="table_category">
+        <div class="panel panel-info" th:each="bookList,start : ${map}">
+            <div class="panel-heading"><div th:text="${start.current.key.name}" class="col-sm-11">计算机</div><div><a th:href="@{'/book/findByCategoryId?categoryId=' + ${start.current.key.id} }"> > > 更多</a></div></div>
+            <div class="panel-body">
+                <div class="row">
+                    <div th:each="book : ${start.current.value}" class="col-sm-4 col-md-3">
+                        <div class="thumbnail">
+                            <a th:href="@{'/book/skipDetail?id=' + ${book.id}}">
+                                <img style="width: 100%; height: 200px; display: block;" alt="100%x200"
+                                     th:src="@{'../static/img/bookImg/' +${book.img} }"
+                                     data-src="holder.js/100%x200" data-holder-rendered="false">
+                            </a>
+                            <div class="caption">
+                                <div  class="text-left">
+                                    <u><a th:if="${#strings.length(book.name)} <= 10" th:text="${book.name}" th:href="@{'/book/skipDetail?id=' + ${book.id}}"></a></u>
+                                </div>
+                                <div  class="text-left">
+                                    <u><a th:if="${#strings.length(book.name)} > 10" th:text="${book.name.substring(0,10)} + '.....'" th:href="@{'/book/skipDetail?id=' + ${book.id}}"></a></u>
+                                </div>
+                                <div>
+                                    <span th:text="'￥' + ${#numbers.formatDecimal((book.price)/100.00,2,2)}" class="text-left text-danger"></span>
+                                </div>
+                                <div  class="small">
+                                    <u><a  style="color: black" th:if="${#strings.length(book.author)} <= 10" th:href="@{'/book/findByAuthor?author=' + ${book.author} }" th:text="${book.author}" href="">123123</a></u>
+                                </div>
+                                <div  class="small">
+                                    <a style="color: black" th:if="${#strings.length(book.author)} > 10" th:text="${book.author.substring(0,8)} + '.....'" th:href="@{'/book/findByAuthor?author=' + ${book.author} }"></a>
+                                </div>
+                                <p>
+                                    <a th:href="@{'/book/skipDetail?id=' + ${book.id}}" class="btn btn-primary btn-block" role="button">查看详情</a>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="../static/bootstrap-3.3.4/dist/js/bootstrap.min.js"></script>
+<script src="../static/Flat-UI-master/dist/js/flat-ui.min.js"></script>
+<script src="../static/bootstrap-3.3.4/js/carousel.js"></script>
+
+<script>
+    $(function () {
+        //================下拉菜单的js===============
+        var bool = true;
+        $("#open").click(function () {
+
+            if (bool){
+                console.log(123);
+                $(this).removeClass("dropdown");
+                $(this).addClass("dropdown open");
+                bool = !bool;
+            }else {
+                console.log(321);
+                $(this).removeClass("dropdown open");
+                $(this).addClass("dropdown");
+                bool = !bool;
+            }
+
+        });
+        //================下拉菜单的js===============
+
+        $("#category").load("/category/loadIndex",{"status":true});
+
+
+
+    })
+
+</script>
+</body>
+</html>

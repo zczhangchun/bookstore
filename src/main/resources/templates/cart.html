@@ -1,0 +1,373 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>购物车</title>
+    <link rel="stylesheet" href="../static/bootstrap-3.3.4/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../static/Flat-UI-master/dist/css/flat-ui.min.css">
+    <link rel="stylesheet" href="../static/css/index.css">
+    <script src="../static/bootstrap-3.3.4/dist/js/jquery-1.11.3.min.js"></script>
+    <style>
+        .row {
+            margin-left: 20px;
+            margin-right: 20px;;
+        }
+
+        .line-center {
+            line-height: 50px;
+            text-align: center;
+        }
+
+        .row input {
+            width: 50px;
+        }
+    </style>
+</head>
+<body>
+
+
+<div id="head" th:replace="head :: head"></div>
+<div class="container">
+    <div class="row thumbnail center">
+        <div class="col-sm-12">
+            <h3 class="text-center" style="margin-bottom: 20px">购物车</h3>
+        </div>
+        <!-- 表格开始 -->
+        <div class="col-sm-12 table-responsive">
+            <table class="table table-hover">
+                <thead>
+                <tr>
+                    <th class="text-center"><input name="selectAll" class="line-center" type="checkbox">
+                    </th>
+                    <th class="text-center"></th>
+                    <th class="text-center">书名</th>
+                    <th class="text-center">单价</th>
+                    <th class="text-center">数量</th>
+                    <th class="text-center">小计</th>
+                    <th class="text-center">操作</th>
+                </tr>
+                </thead>
+
+
+                <tbody>
+                <tr th:name="${cart.bookId}" th:each="cart : ${cartList}">
+                    <td>
+                        <input th:id="${cart.bookId}" name="chooseInfo" class="mainClass line-center"
+                               type="checkbox">
+                    </td>
+                    <td>
+                        <a th:href="@{'/book/skipDetail?id=' + ${cart.bookId} }">
+                            <div class="line-center" style="width: 50px;height: 50px;">
+                                <img th:src="@{'../static/img/bookImg/' + ${cart.img} }"
+                                     style="height: 100%;" alt=""/>
+                            </div>
+                        </a>
+                    </td>
+                    <td>
+                        <a th:href="@{'/book/skipDetail?id=' + ${cart.bookId} }">
+                            <div class="line-center" th:text="${cart.bookName}">
+                                java程序设计但是名字还不够是的发的3423424234
+                            </div>
+                        </a>
+                    </td>
+                    <td>
+                        <div class="line-center"
+                             th:text="'￥' + ${#numbers.formatDecimal((cart.price)/100.00,2,2)}">
+                            ￥55.60
+                        </div>
+                    </td>
+                    <td>
+                        <div th:name="${cart.bookId}" class=" line-center">
+                            <button type="button" class="btn btn-sm btn-danger">
+                                <span class="glyphicon glyphicon-minus" aria-hidden="true"></span>
+                            </button>
+                            <input type="text" class="number small text-center" th:value="${cart.number}"/>
+                            <button type="button" class="btn btn-sm btn-success">
+                                <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+                            </button>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="price line-center"
+                             th:text="'￥ ' + ${#numbers.formatDecimal((cart.price * cart.number)/100.00,2,2)}">
+                            $20000.00
+                        </div>
+                    </td>
+                    <td>
+                        <div class="line-center">
+                            <button class="delete deleteClass btn btn-sm btn-danger">删除</button>
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+                <tfoot>
+                <tr>
+                    <td colspan="5">统计</td>
+                    <td id="totalPrice" class="text-center">总价:￥10000</td>
+                </tr>
+                </tfoot>
+            </table>
+        </div>
+        <!-- 表格结束 -->
+
+
+        <div class="col-sm-offset-9 col-sm-3" style="padding-bottom: 15px;">
+            <a href="/category/skipIndex">
+                <button class="btn btn-success">继续购物</button>
+            </a>
+            <button id="submit" class="btn btn-danger">提交订单</button>
+        </div>
+        <form id="form" action="/cart/skipCreateOrder">
+            <input hidden name="ids">
+        </form>
+    </div>
+</div>
+
+
+<div class="navbar navbar-default footer">
+</div>
+<script src="../static/bootstrap-3.3.4/dist/js/bootstrap.min.js"></script>
+<script src="../static/Flat-UI-master/dist/js/flat-ui.min.js"></script>
+<script src="../static/bootstrap-3.3.4/js/carousel.js"></script>
+<script th:inline="javascript">
+
+    $(function () {
+
+
+        $("input[name='chooseInfo']").prop("checked",false).removeClass("checked-true");
+        $('input[name="selectAll"]').prop("checked",false);
+
+        //================下拉菜单的js===============
+        var bool = true;
+        $("#open").click(function () {
+
+            if (bool){
+                console.log(123);
+                $(this).removeClass("dropdown");
+                $(this).addClass("dropdown open");
+                bool = !bool;
+            }else {
+                console.log(321);
+                $(this).removeClass("dropdown open");
+                $(this).addClass("dropdown");
+                bool = !bool;
+            }
+
+        });
+        //================下拉菜单的js===============
+
+
+        //================金额===============
+        var list = /*[[${cartList}]]*/{};
+
+        var number = 0;
+
+        for (let index in list) {
+            var cart = list[index];
+
+            number += cart.price * cart.number;
+        }
+
+        number = number / 100;
+        number = number.toFixed(2);
+        $("#totalPrice").text("总价：¥ " + number);
+        //================金额===============
+
+
+        $('input[name="selectAll"]').on("click", function () {
+            if ($(this).is(':checked')) {
+                $('input[name="chooseInfo"]').each(function () {
+                    $(this).prop("checked", true).addClass("checked-true");
+                });
+            } else {
+                $('input[name="chooseInfo"]').each(function () {
+                    $(this).prop("checked", false).removeClass("checked-true");
+                });
+            }
+        });
+
+        $("input[name='chooseInfo']").on("click", function () {
+
+            if (!$(this).prop("checked")) {
+                $(this).prop("checked", false).removeClass("checked-true");
+
+                //在判断有没有其他的被选中，没有的话就把全选的也变成false
+                var list = $(".checked-true");
+
+                if (list.length == 0){
+                    // console.log("run");
+                    $('input[name="selectAll"]').prop("checked", false);
+                }
+
+            } else {
+                $(this).prop("checked", true).addClass("checked-true");
+                var checkedList = $(".checked-true");
+                var infoList = $("input[name='chooseInfo']");
+                if (checkedList.length == infoList.length){
+                    $('input[name="selectAll"]').prop("checked", true);
+                }
+            }
+        })
+
+        $("#submit").click(function () {
+            var list = new Array();
+            $(".checked-true").each(function (index, element) {
+
+                list[index] = $(element).prop("id")
+
+            })
+
+            if (list.length > 0) {
+                //当有被勾选的值时，将list传递给表单中的input
+                $("#form input").val(list.toString());
+                //表单提交
+                $("#form").submit();
+            } else {
+                alert("您还没有选择图书哦!");
+            }
+
+        })
+        //数量+1
+        $(".glyphicon-plus").parent().click(function () {
+
+
+            var div = $(this).parent();
+
+            if (parseInt(div.children("input").val()) < 100) {
+                $.ajax({
+                    url: "/cart/updateCart",
+                    type: "POST",
+                    data: {
+                        "bookId": div.attr("name"),
+                        "number": parseInt(div.children("input").val()) + 1
+                    },
+                    success: function (date) {
+
+                        price = parseInt(date);
+                        price = price / 100;
+                        price = price.toFixed(2);
+
+                        $(div).parent().parent().find(".price").text("¥ " + price);
+                        $(div).children("input").val(parseInt(div.children("input").val()) + 1);
+                        totalPrice();
+                    }
+
+                })
+            }
+
+        })
+
+
+        //数量-1
+        $(".glyphicon-minus").parent().click(function () {
+
+
+            var div = $(this).parent();
+
+            if (parseInt(div.children("input").val()) > 1) {
+                $.ajax({
+                    url: "/cart/updateCart",
+                    type: "POST",
+                    data: {
+                        "bookId": div.attr("name"),
+                        "number": parseInt(div.children("input").val()) - 1
+                    },
+                    success: function (date) {
+
+                        price = parseInt(date);
+                        price = price / 100;
+                        price = price.toFixed(2);
+
+                        $(div).parent().parent().find(".price").text("¥ " + price);
+                        $(div).children("input").val(parseInt(div.children("input").val()) - 1);
+                        totalPrice();
+                    }
+
+                })
+            }
+
+        })
+
+
+        //数量输入框失去焦点
+        $(".number").blur(function () {
+
+            var value = parseInt($(this).val());
+
+            if (value > 100) {
+                value = 100
+            }
+
+            if (value < 0) {
+                value = 1;
+            }
+
+            var div = $(this).parent();
+
+            $.ajax({
+                url: "/cart/updateCart",
+                type: "POST",
+                data: {
+                    "bookId": div.attr("name"),
+                    "number": value
+                },
+                success: function (date) {
+
+                    price = parseInt(date);
+                    price = price / 100;
+                    price = price.toFixed(2);
+
+                    $(div).parent().parent().find(".price").text("¥ " + price);
+                    $(div).children("input").val(value);
+                    totalPrice();
+                }
+            })
+
+
+        })
+
+
+        $(".delete").click(function () {
+
+
+            var tr = $(this).parent().parent().parent();
+            var id = tr.attr("name");
+            $(tr).remove();
+            $.ajax({
+                url: "/cart/deleteCart",
+                data: {"bookId": id},
+                success: function () {
+                    totalPrice();
+                }
+            })
+
+
+        })
+
+    })
+
+    function totalPrice() {
+
+        var total = 0;
+
+        $(".price").each(function () {
+            var price = $(this).text().substring(2) * 100;
+            total += price;
+        })
+
+
+        total = total / 100;
+        total = total.toFixed(2);
+        $("#totalPrice").text("总价：¥ " + total);
+
+
+    }
+
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>登录</title>
+    <link rel="stylesheet" href="../static/bootstrap-3.3.4/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../static/Flat-UI-master/dist/css/flat-ui.min.css">
+    <link rel="stylesheet" href="../static/css/index.css">
+    <script src="../static/bootstrap-3.3.4/dist/js/jquery-1.11.3.min.js"></script>
+</head>
+<body>
+<div id="head" th:replace="head :: head"></div>
+<div class="container">
+    <div class="row thumbnail center">
+        <div class="col-sm-12">
+            <h3 class="text-center" style="margin-bottom: 20px;">用户登录</h3>
+        </div>
+        <div class="col-sm-5"></div><div style="color: red" th:text="${msg}"></div>
+        <div class="col-sm-12">
+            <form id="form" class="form-horizontal caption" method="post" action="/user/login">
+                <div class="form-group">
+                    <label for="username" class="col-sm-4 control-label">用户名</label>
+                    <div class="col-sm-5">
+                        <input type="text" class="form-control" name="username" id="username" placeholder="用户名">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="password" class="col-sm-4 control-label">密码</label>
+                    <div class="col-sm-5">
+                        <input type="password" class="form-control" name="password" id="password" placeholder="密码">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="password" class="col-sm-4 control-label">验证码</label>
+                    <div class="col-sm-3">
+                        <input type="text" class="form-control" name="captcha" id="captcha" placeholder="验证码">
+                    </div>
+                        <img alt="验证码" onclick="this.src='/defaultKaptcha?d='+new Date()*1"
+                             src="/defaultKaptcha">
+                    <label style="color: red;" class="errorClass" id="captchaError"></label>
+                </div>
+
+                <div class="form-group">
+                    <div class="col-sm-offset-4 col-sm-5">
+                        <button type="submit" class="btn btn-success btn-block">立即登录</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+<div class="navbar navbar-default navbar-fixed-bottom">
+</div>
+
+<script>
+    $(function () {
+
+        //================下拉菜单的js===============
+        var bool = true;
+        $("#open").click(function () {
+
+            if (bool){
+                console.log(123);
+                $(this).removeClass("dropdown");
+                $(this).addClass("dropdown open");
+                bool = !bool;
+            }else {
+                console.log(321);
+                $(this).removeClass("dropdown open");
+                $(this).addClass("dropdown");
+                bool = !bool;
+            }
+
+        });
+        //================下拉菜单的js===============
+
+        //验证码输入框获得焦点事件
+        $("#captcha").focus(function () {
+            $("#captchaError").text("");
+        })
+
+        //验证码输入框失去焦点事件
+        $("#captcha").blur(function () {
+
+            verifyCaptcha();
+
+        })
+
+        //提交校验
+        $("#form").submit(function () {
+
+            return verifyCaptcha();
+
+        })
+
+    })
+
+    function verifyCaptcha() {
+        var id = "captcha";
+        var value = $("#" + id).val();
+        var bool = true;
+        //验证码不能为空判断
+        if (!value){
+            $("#" + id + "Error").text("验证码不能为空");
+            return false;
+        }
+
+        //验证码是4位数
+        if (value.length != 4){
+            $("#" + id + "Error").text("验证码为4位数");
+            return false;
+        }
+
+        //ajax校验验证码
+        $.ajax({
+            url: "/verifyCaptcha",
+            data: {"captcha" : value},
+            async: false,
+            success: function(data){
+                if (!data){
+                    //验证码错误
+                    $("#" + id + "Error").text("验证码错误");
+                    bool = false;
+                }
+
+            }
+        })
+
+        return bool;
+
+    }
+
+</script>
+
+<script src="../static/bootstrap-3.3.4/dist/js/bootstrap.min.js"></script>
+<script src="../static/Flat-UI-master/dist/js/flat-ui.min.js"></script>
+<script src="../static/bootstrap-3.3.4/js/carousel.js"></script>
+</body>
+</html>

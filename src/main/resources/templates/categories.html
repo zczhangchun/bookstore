@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>全部分类</title>
+
+    <link rel="stylesheet" href="../static/bootstrap-3.3.4/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../static/Flat-UI-master/dist/css/flat-ui.min.css">
+    <link rel="stylesheet" href="../static/css/index.css">
+    <script src="../static/bootstrap-3.3.4/dist/js/jquery-1.11.3.min.js"></script>
+</head>
+<body>
+<div id="head" th:replace="head :: head"></div>
+<div class="container">
+
+    <!-- 分类条目开始 -->
+    <nav class="navbar navbar-default">
+
+
+        <div class="container-fluid ">
+            <div class="navbar-header" >
+                <a th:href="@{'/book/findByCategoryId?categoryId=' + ${category.id} }" style="font-size: 17px; width: 185px" class="category navbar-brand" th:each="category,start : ${categoryList}" th:if="${start.index} < 6" th:text="${category.name}">Brand</a>
+            </div>
+
+            <div class="nav navbar-nav navbar-right">
+                <li><a id="btn" class="glyphicon glyphicon-chevron-down" href="#"> 更多</a></li>
+            </div>
+        </div>
+
+        <div id="hide" class="navbar-header" style="display: none">
+            <a th:href="@{'/book/findByCategoryId?categoryId=' + ${category.id} }" style="font-size: 17px; width: 165px" class="category navbar-brand" th:each="category,start : ${categoryList}" th:if="${start.index} >= 6 and ${category.name ne '无'}" th:text="${category.name}">Brand</a>
+        </div>
+    </nav>
+    <!-- 分类条目结束 -->
+
+    <div class="col-sm-12" style="text-align: right;" th:if="${pageInfo}">
+        <a style="color: #0f0f0f" th:text="'共' + ${pageInfo.total} + '本书 '"></a>&nbsp;
+        <a style="color: red;" th:text="${pageInfo.pageNum}"></a><a style="color: #0f0f0f" th:text="'/' + ${pageInfo.pages} + ' '"></a>&nbsp;&nbsp;&nbsp;
+        <br/>
+    </div>
+    <!-- 商品条目开始 -->
+    <div  th:if="${pageInfo}">
+        <div class="book col-sm-4 col-md-3"  th:each="book : ${pageInfo.list}">
+            <div class="thumbnail" >
+                <a th:href="@{'/book/skipDetail?id=' + ${book.id}}">
+                    <input hidden="hidden">
+                    <img style="width: 100%; height: 200px; display: block;" alt="100%x200"
+                         th:src="@{'../static/img/bookImg/' +${book.img} }"
+                         data-src="holder.js/100%x200" data-holder-rendered="false">
+                </a>
+                <div class="caption">
+                    <div th:if="${#strings.length(book.name)} <= 10" th:text="${book.name}" class="text-left">林徽因传</div>
+                    <div th:if="${#strings.length(book.name)} > 10" th:text="${book.name.substring(0,10)} + '.....'" class="text-left">林徽因传</div>
+                    <div>
+                        <span th:text="'￥' + ${#numbers.formatDecimal((book.price)/100.00,2,2)}" class="text-left text-danger"></span>
+                    </div>
+                    <div th:if="${#strings.length(book.author)} <= 10" th:text="${book.author}" class="small">
+                        XXX著 / 中国邮电出版社
+                    </div>
+                    <div th:if="${#strings.length(book.author)} > 10" th:text="${book.author.substring(0,8)} + '.....'" class="small">
+                        XXX著 / 中国邮电出版社
+                    </div>
+                    <p>
+                        <a th:href="@{'/book/skipDetail?id=' + ${book.id}}" class="btn btn-primary btn-block" role="button">查看详情</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- 商品条目结束 -->
+
+    <!-- 分页开始 -->
+    <div class="col-sm-12" style="text-align: center">
+        <div class="pagination">
+            <ul id="page" th:if="${pageInfo}">
+
+                <li class="previous" th:if="${pageInfo.hasPreviousPage}"><a th:href="@{'/book/findByCategoryId?categoryId=' + ${pageInfo.list[0].categoryId} + '&page=1' }">首页</a></li>
+                <li class="previous" th:if="${pageInfo.hasPreviousPage}"><a th:href="@{'/book/findByCategoryId?categoryId=' + ${pageInfo.list[0].categoryId} + '&page=' + ${pageInfo.prePage} }">上一页</a></li>
+                <li class="next" th:if="${pageInfo.hasNextPage}"><a th:href="@{'/book/findByCategoryId?categoryId=' + ${pageInfo.list[0].categoryId} + '&page=' + ${pageInfo.nextPage} }">下一页</a></li>
+                <li class="next" th:if="${pageInfo.hasNextPage}"><a th:href="@{'/book/findByCategoryId?categoryId=' + ${pageInfo.list[0].categoryId} + '&page=' + ${pageInfo.pages} }">尾页</a></li>
+
+            </ul>
+        </div> <!-- /pagination -->
+    </div>
+    <!-- 分页结束 -->
+
+</div>
+
+
+
+
+<script>
+
+    $(function () {
+
+
+
+        var x = 0;
+        $("#btn").click(function () {
+            $("#hide").slideToggle("display")
+            if (x%2 == 0){
+                $(this).removeClass("glyphicon glyphicon-chevron-down");
+                $(this).addClass("glyphicon glyphicon-chevron-up");
+                $(this).text(" 收起");
+                x++;
+            } else {
+                $(this).removeClass("glyphicon glyphicon-chevron-up");
+                $(this).addClass("glyphicon glyphicon-chevron-down");
+                $(this).text(" 更多");
+                x++
+            }
+        })
+
+
+    })
+</script>
+<script src="../static/bootstrap-3.3.4/dist/js/bootstrap.min.js"></script>
+<script src="../static/Flat-UI-master/dist/js/flat-ui.min.js"></script>
+<script src="../static/bootstrap-3.3.4/js/carousel.js"></script>
+<script>
+
+    $(function () {
+        //================下拉菜单的js===============
+        var bool = true;
+        $("#open").click(function () {
+
+            if (bool){
+                console.log(123);
+                $(this).removeClass("dropdown");
+                $(this).addClass("dropdown open");
+                bool = !bool;
+            }else {
+                console.log(321);
+                $(this).removeClass("dropdown open");
+                $(this).addClass("dropdown");
+                bool = !bool;
+            }
+
+        });
+        //================下拉菜单的js===============
+    })
+</script>
+</body>
+</html>

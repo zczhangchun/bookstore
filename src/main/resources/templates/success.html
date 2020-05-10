@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>订单支付</title>
+    <link rel="stylesheet" href="../static/bootstrap-3.3.4/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../static/Flat-UI-master/dist/css/flat-ui.min.css">
+    <link rel="stylesheet" href="../static/css/index.css">
+    <script src="../static/bootstrap-3.3.4/dist/js/jquery-1.11.3.min.js"></script>
+    <script src="../static/js/qrcode.min.js"></script>
+    <style>
+
+    </style>
+</head>
+<body>
+
+<div id="head" th:replace="head :: head"></div>
+<div class="container">
+    <div class="row thumbnail center">
+        <div class="col-sm-12">
+            <h3 class="text-center" style="margin-bottom: 20px;">支付成功</h3>
+        </div>
+        <div class="text-center col-sm-12">
+            <div id="orderId" th:text="'订单编号：' + ${orderId} ">订单编号：xxxxxxxxxxx</div>
+            <div id="actualPay" th:text="'应付金额：￥' + ${#numbers.formatDecimal((actualPay)/100.00,2,2)}">应付金额：xxxxxx</div>
+        </div>
+    </div>
+</div>
+<script>
+
+
+</script>
+<script src="../static/bootstrap-3.3.4/dist/js/bootstrap.min.js"></script>
+<script src="../static/Flat-UI-master/dist/js/flat-ui.min.js"></script>
+<script src="../static/bootstrap-3.3.4/js/carousel.js"></script>
+<script>
+
+    $(function () {
+        //================下拉菜单的js===============
+        var bool = true;
+        $("#open").click(function () {
+
+            if (bool){
+                console.log(123);
+                $(this).removeClass("dropdown");
+                $(this).addClass("dropdown open");
+                bool = !bool;
+            }else {
+                console.log(321);
+                $(this).removeClass("dropdown open");
+                $(this).addClass("dropdown");
+                bool = !bool;
+            }
+
+        });
+        //================下拉菜单的js===============
+    })
+</script>
+</body>
+</html>

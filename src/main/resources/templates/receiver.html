@@ -1,0 +1,303 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>地址管理</title>
+    <link rel="stylesheet" href="../static/bootstrap-3.3.4/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../static/Flat-UI-master/dist/css/flat-ui.min.css">
+    <link rel="stylesheet" href="../static/css/index.css">
+    <script src="../static/bootstrap-3.3.4/dist/js/jquery-1.11.3.min.js"></script>
+    <style>
+        .pagination {
+            background: #16a085;
+        }
+    </style>
+    <script>
+        $(function () {
+            $('#myTabs a').click(function () {
+                if ($(this)[0].hash == "#orderManager" && $("#footer").hasClass("navbar-fixed-bottom")) {
+                    $("#footer").removeClass("navbar-fixed-bottom");
+                } else {
+                    if (!$("#footer").hasClass("navbar-fixed-bottom")) {
+                        $("#footer").addClass("navbar-fixed-bottom");
+                    }
+                }
+                $(this).tab('show')
+            });
+
+
+        })
+
+    </script>
+</head>
+<body>
+<div id="head" th:replace="head :: head"></div>
+<div class="container">
+    <div class="row thumbnail center col-sm-12">
+        <div class="col-sm-12">
+            <h3 class="text-center" style="margin-bottom: 20px">地址管理</h3>
+        </div>
+
+        <ul class="nav nav-tabs nav-justified" id="myTabs">
+            <li class="active"><a href="#">修改地址</a></li>
+            <li><a href="/user/skipReceiverAdd">添加地址</a></li>
+        </ul>
+
+        <!-- Tab panes -->
+        <div class="tab-content">
+            <div role="tabpanel" class="tab-pane active" id="editPassword">
+                <div class="container" style="margin-top: 20px;">
+
+
+                    <div class="col-sm-12">
+                        <form method="post" id="form" class="form-horizontal caption" action="/user/updateAddress">
+                            <div class="form-group">
+
+                                <div class="form-group">
+                                    <div class="col-sm-6"></div>
+                                    <div th:text="${msg}" class="col-sm-5" style="color: red">
+                                    </div>
+                                </div>
+
+                                <label class="col-sm-4 control-label">地址选择</label>
+                                <div class="col-sm-5">
+                                    <select id="select" onchange="find(this)" name="id" style="width: 435px; height: 50px; font-size: 30px">
+                                        <th:block th:each="address : ${addressList}">
+                                            <option th:if="${#strings.length(address.detail)} <= 10"
+                                                    th:value="${address.id}" th:text="${address.detail}"></option>
+                                            <option th:if="${#strings.length(address.detail)} > 10"
+                                                    th:value="${address.id}"
+                                                    th:text="${address.detail.substring(0,8)} + '.....'"></option>
+                                        </th:block>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label">姓名<a style="color: red">*</a></label>
+                                <div class="col-sm-5">
+                                    <input type="text" name="name" class="inputClass form-control"
+                                           id="name" placeholder="请输入姓名">
+                                </div>
+                                <label class="errorClass" style="font-size: 5px; color: red"
+                                       id="nameError"></label>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label">电话<a style="color: red">*</a></label>
+                                <div class="col-sm-5">
+                                    <input type="text" name="phone" class="inputClass form-control"
+                                           id="phone" placeholder="请输入电话">
+                                </div>
+                                <label style="font-size: 5px; color: red" id="phoneError"
+                                       class="errorClass"></label>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label">邮编</label>
+                                <div class="col-sm-5">
+                                    <input type="text" name="zip" class="inputClass form-control"
+                                           id="zip" placeholder="请输入邮编">
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label">详细地址<a style="color: red">*</a></label>
+                                <div class="col-sm-5 data rowHeight2x">
+                                    <textarea name="detail" id="detail" class="inputClass form-control" rows="3"
+                                              placeholder="详细地址"></textarea>
+                                </div>
+                                <label style="font-size: 5px; color: red" id="detailError"
+                                       class="errorClass"></label>
+                            </div>
+
+
+                            <div class="form-group">
+                                <div class="col-sm-offset-4 col-sm-5">
+                                    <button id="btn" disabled type="submit" class="btn btn-info btn-block">立即修改</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script src="../static/bootstrap-3.3.4/dist/js/bootstrap.min.js"></script>
+<script src="../static/Flat-UI-master/dist/js/flat-ui.min.js"></script>
+<script src="../static/bootstrap-3.3.4/js/carousel.js"></script>
+<script th:inline="javascript">
+
+    $(function () {
+
+        //================ 数据验证 =================
+        //得到焦点事件
+        $(".inputClass").focus(function () {
+
+            var id = $(this).prop("id");
+
+            $("#" + id + "Error").text("");
+
+        })
+
+        //失去焦点事件
+        $(".inputClass").blur(function () {
+
+            var lableId = $(this).prop("id");
+
+            var funName = "verify" + lableId.substring(0,1).toUpperCase() + lableId.substring(1) + "()";
+            eval(funName);
+        })
+
+        //表单提交事件
+        $("#form").submit(function () {
+
+            var bool = true;
+            if (!verifyName()) {
+                bool = false;
+            }
+
+            if (!verifyPhone()) {
+                bool = false;
+            }
+
+            if (!verifyDetail()) {
+                bool = false;
+            }
+
+            return bool;
+
+        })
+
+        //================ 加载第一个地址信息填充 =================
+        var list = /*[[${addressList}]]*/ {};
+        if (list[0] != null) {
+            $("#name").val(list[0].name);
+            $("#phone").val(list[0].phone);
+            $("#zip").val(list[0].zip);
+            $("#detail").val(list[0].detail);
+            $("#btn").prop("disabled",false);
+        }
+
+
+    })
+
+    function verifyName() {
+
+        var id = "name";
+        var value = $("#" + id).val();
+
+        //非空校验
+        if (!value){
+            $("#" + id + "Error").text("名字不能为空");
+            return false;
+        }
+
+        return true;
+    }
+
+    function verifyPhone() {
+        var id = "phone";
+        var value = $("#" + id).val();
+        var myreg = /^[1][3,4,5,7,8][0-9]{9}$/;
+
+        //非空校验
+        if (!value) {
+            $("#" + id + "Error").text("手机号不能为空");
+            showError($("#" + id + "Error"));
+            return false;
+        }
+
+
+        //验证手机号格式
+        if (!myreg.test(value)) {
+            $("#" + id + "Error").text("手机号格式不正确");
+            showError($("#" + id + "Error"));
+            return false;
+        }
+
+        return true;
+
+    }
+
+    function verifyDetail() {
+        var id = "detail";
+        var value = $("#" + id).val();
+
+        //非空校验
+        if (!value){
+            $("#" + id + "Error").text("地址不能为空");
+            showError($("#" + id + "Error"));
+            return false;
+        }
+
+        return true;
+
+    }
+
+    //显示错误
+    function showError(element) {
+        var text = element.text();
+        if (!text) {
+            //如果为空，隐藏元素
+            element.css("display", "none");
+        } else {
+            //有内容，显示该元素
+            element.css("display", "");
+        }
+
+    }
+
+    function find(element) {
+
+        var list = /*[[${addressList}]]*/ {};
+
+        var count = $(element).val();
+
+        for (var i = 0; i < list.length; i++){
+
+            if(count ==list[i].id){
+                $("#name").val(list[i].name);
+                $("#phone").val(list[i].phone);
+                $("#zip").val(list[i].zip);
+                $("#detail").val(list[i].detail);
+                break;
+            }
+
+        }
+
+
+
+
+    }
+    $(function () {
+
+        //================下拉菜单的js===============
+        var bool = true;
+        $("#open").click(function () {
+
+            if (bool){
+                console.log(123);
+                $(this).removeClass("dropdown");
+                $(this).addClass("dropdown open");
+                bool = !bool;
+            }else {
+                console.log(321);
+                $(this).removeClass("dropdown open");
+                $(this).addClass("dropdown");
+                bool = !bool;
+            }
+
+        });
+        //================下拉菜单的js===============
+    })
+
+</script>
+</body>
+</html>
